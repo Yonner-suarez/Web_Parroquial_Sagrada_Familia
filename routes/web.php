@@ -14,3 +14,4 @@ Route::view('/administracion/Gestionar_Horarios', 'components.admin-module-gesti
 Route::view('/administracion/Gestionar_Eventos', 'components.admin-module-gestionar-eventos')->name('administracion.gestionar-eventos');
 Route::view('/administracion/Gestionar_Noticias', 'components.admin-module-gestionar-noticias')
     ->name('administracion.gestionar-noticias');
+Route::view('/administracion/Gestionar_Usuarios', 'components.admin-module-gestionar-usuarios')->name('administracion.gestionar-usuarios');

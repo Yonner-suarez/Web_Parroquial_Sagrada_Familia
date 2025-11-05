@@ -50,8 +50,8 @@
       </div>
 
       <div class="relative">
-          <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña"
-                class="w-full p-3 border rounded-full focus:ring-2 focus:ring-orange-500 focus:outline-none pr-10">
+        <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña"
+        class="w-full p-3 border rounded-full focus:ring-2 focus:ring-orange-500 focus:outline-none pr-10">
           <!-- Icono de ojo -->
           <button type="button" id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
               👁️
@@ -121,133 +121,112 @@
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  //password ver
-  const togglePassword = document.getElementById('togglePassword');
-  const passwordInput = document.getElementById('password');
-
-  togglePassword.addEventListener('click', () => {
-      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      passwordInput.setAttribute('type', type);
-
-      // Cambiar icono opcionalmente
-      togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
-  });
-
-
-  //Login
 document.addEventListener('DOMContentLoaded', () => {
-    const logo = document.querySelector('.lgo'); // tu logo
-    const modal = document.getElementById('loginModal');
-    const closeBtn = document.getElementById('closeModal');
+    // ---- Toggle contraseña ----
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
 
-    // Mostrar/Ocultar contraseña
-    togglePassword.addEventListener('click', () => {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
-    });
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', (e) => {
+            e.preventDefault(); // evita efectos colaterales
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            togglePassword.textContent = isPassword ? '🙈' : '👁️';
+            passwordInput.focus();
+        });
+    }
 
-    // Comprobar si hay token en localStorage
+    // ---- Modal login ----
+    const logo = document.querySelector('.lgo');
+    const modal = document.getElementById('loginModal');
+    const closeBtn = document.getElementById('closeModal');
+    const form = document.getElementById('loginForm');
+
+    // Mostrar/Ocultar modal
     const token = localStorage.getItem('token');
     if (token) {
-        // Deshabilitar click en el logo
+        // Sesión activa: evitar click en logo
         logo.style.cursor = 'not-allowed';
         logo.addEventListener('click', (e) => {
-            e.stopImmediatePropagation(); 
+            e.stopImmediatePropagation();
             Swal.fire({
                 icon: 'info',
                 title: 'Sesión activa',
                 text: 'Ya has iniciado sesión.',
                 confirmButtonColor: '#f97316'
             }).then(() => {
-                    // Redirigir después del SweetAlert
-                    window.location.href = '/administracion/Gestionar_Noticias';
-                });;
+                window.location.href = '/administracion/Gestionar_Noticias';
+            });
         });
     } else {
-        // Abrir modal al hacer click en logo
-        logo.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-        });
+        logo.addEventListener('click', () => modal.classList.remove('hidden'));
     }
 
-    // Cerrar modal al hacer click en la X
-    closeBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
-
-    // Cerrar modal si clic fuera del contenido
+    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.add('hidden');
-        }
+        if (e.target === modal) modal.classList.add('hidden');
     });
 
-    // Manejo del formulario de login
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const user = document.getElementById('username').value.trim();
-        const pass = document.getElementById('password').value.trim();
+    // ---- Manejo del formulario ----
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = passwordInput.value.trim();
 
-        if (!user || !pass) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Campos incompletos',
-                text: 'Por favor ingresa usuario y contraseña.',
-                confirmButtonColor: '#f97316'
-            });
-            return;
-        }
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ email: user, password: pass })
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.status === '200' && data.data.token) {
-                // Guardar token en localStorage
-                localStorage.setItem('token', data.data.token);
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Inicio de sesión correcto',
-                    text: `Bienvenido, ${user}!`,
-                    confirmButtonColor: '#f97316'
-                }).then(() => {
-                    // Redirigir después del SweetAlert
-                    window.location.href = '/administracion/Gestionar_Noticias';
-                });
-
-                modal.classList.add('hidden'); // cerrar modal
-                form.reset();
-            } else {
+            if (!user || !pass) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error en el login',
-                    text: data.message || 'Usuario o contraseña incorrectos',
+                    title: 'Campos incompletos',
+                    text: 'Por favor ingresa usuario y contraseña.',
+                    confirmButtonColor: '#f97316'
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email: user, password: pass })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.token) {
+                    localStorage.setItem('token', data.token);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Inicio de sesión correcto',
+                        text: `Bienvenido, ${user}!`,
+                        confirmButtonColor: '#f97316'
+                    }).then(() => {
+                        window.location.href = '/administracion/Gestionar_Noticias';
+                    });
+
+                    modal.classList.add('hidden');
+                    form.reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error en el login',
+                        text: data.message || 'Usuario o contraseña incorrectos',
+                        confirmButtonColor: '#f97316'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar al servidor.',
                     confirmButtonColor: '#f97316'
                 });
             }
-
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error de conexión',
-                text: 'No se pudo conectar al servidor.',
-                confirmButtonColor: '#f97316'
-            });
-        }
-    });
+        });
+    }
 });
 </script>
-

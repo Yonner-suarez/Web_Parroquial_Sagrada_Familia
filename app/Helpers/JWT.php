@@ -4,12 +4,17 @@ namespace App\Helpers;
 
 class JWT
 {
+    /**
+     * Obtener la clave secreta desde .env
+     */
     private static function getSecret(): string
     {
         return env('SECRET_KEY', 'clave_por_defecto'); // fallback
     }
 
-    // Recupera el tiempo de expiración desde .env
+    /**
+     * Recupera el tiempo de expiración desde .env (en segundos)
+     */
     private static function getExpiration(): int
     {
         return (int) env('EXPIRATION', 60) * 60; // convertir minutos a segundos
@@ -32,15 +37,62 @@ class JWT
         $expireTime = $expire ?? self::getExpiration();
         $payload['exp'] = time() + $expireTime;
 
-        $base64UrlHeader = self::base64UrlEncode(json_encode($header));
+        $base64UrlHeader  = self::base64UrlEncode(json_encode($header));
         $base64UrlPayload = self::base64UrlEncode(json_encode($payload));
-        $signature = self::sign("$base64UrlHeader.$base64UrlPayload", self::getSecret());
+        $signature        = self::sign("$base64UrlHeader.$base64UrlPayload", self::getSecret());
 
         return "$base64UrlHeader.$base64UrlPayload.$signature";
     }
 
     /**
-     * Firmar el token
+     * Decodificar JWT y validar firma + expiración
+     *
+     * @param string $token
+     * @return array|null Devuelve el payload o null si no es válido
+     */
+    public static function decode(string $token): ?array
+{
+    try {
+        // Separar header, payload y firma
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return null;
+        }
+
+        [$header64, $payload64, $signature] = $parts;
+
+        // Decodificar payload
+        $payload = json_decode(base64_decode($payload64), true);
+        if (!$payload) {
+            return null;
+        }
+
+        // verificar expiración
+        if (isset($payload['exp']) && $payload['exp'] < time()) {
+            return null;
+        }
+
+        // verificar firma
+        $expectedSig = self::sign("$header64.$payload64", self::getSecret());
+        if (!hash_equals($expectedSig, $signature)) {
+            return null;
+        }
+
+        // todo correcto
+        return $payload;
+
+    } catch (\Throwable $e) {
+        \Log::error('Error al decodificar JWT', [
+            'token' => $token,
+            'exception' => $e->getMessage()
+        ]);
+        return null;
+    }
+}
+
+
+    /**
+     * Firmar el token (HMAC SHA256)
      */
     private static function sign(string $data, string $secret): string
     {

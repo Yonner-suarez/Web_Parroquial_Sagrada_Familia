@@ -52,6 +52,7 @@ $factory->define(Evento::class, function (Faker $faker) {
         'fecha_inicio' => $inicio,
         'fecha_fin' => $faker->dateTimeBetween($inicio, '+2 months'),
         'lugar' => $faker->address,
+        'hora' => $inicio->format('H:i:s'), // hora separada
         'imagen_url' => $faker->imageUrl(800, 600, 'church', true),
         'creado_por' => factory(Usuario::class),
         'creado_en' => now(),

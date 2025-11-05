@@ -1,4 +1,4 @@
-<div class="contenedor_nv">
+<div class="contenedor_nv fixed top-0 left-0 w-full z-50">
     <img class="lgo" src="/Assets/logo.png" alt="logo">
 
     <nav class="navbar navbar-expand-lg mt-4 w-100">
@@ -14,6 +14,10 @@
             <li class="nav-item mx-3">
                 <a class="nav-link fw-semibold text-decoration-none {{ request()->routeIs('administracion.gestionar-horarios') ? 'active' : '' }}" 
                   href="{{ route('administracion.gestionar-horarios') }}">Gestionar Horarios</a>
+            </li>
+             <li class="nav-item mx-3">
+                <a class="nav-link fw-semibold text-decoration-none {{ request()->routeIs('administracion.gestionar-usuarios') ? 'active' : '' }}" 
+                  href="{{ route('administracion.gestionar-usuarios') }}">Gestionar Usuarios</a>
             </li>
                         <!-- Botón Salir -->
             <li class="nav-item mx-3">
