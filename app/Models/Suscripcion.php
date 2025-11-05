@@ -14,7 +14,7 @@ class Suscripcion extends Model
     protected $fillable = [
         'correo',
         'tipo',
-        'usuario_id',
         'creado_en',
     ];
+    public $timestamps = false;
 }

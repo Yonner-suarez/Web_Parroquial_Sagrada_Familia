@@ -23,4 +23,5 @@ class Contacto extends Model
     protected $attributes = [
         'leido' => false,
     ];
+    public $timestamps = false;
 }

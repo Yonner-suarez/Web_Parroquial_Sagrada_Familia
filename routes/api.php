@@ -6,6 +6,8 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\SuscripcionController;
+use App\Http\Controllers\ContactoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,3 +46,7 @@ Route::post('/horarios/agregar', [HorarioController::class, 'agregar']);
 Route::put('/horarios/actualizar', [HorarioController::class, 'actualizar']);
 Route::delete('/horarios/eliminar', [HorarioController::class, 'eliminar']);
 Route::get('/horarios/filtrar', [HorarioController::class, 'filtrarHorarios']);
+
+Route::post('/suscripciones', [SuscripcionController::class, 'store']);
+
+Route::post('/contacto/comentario', [ContactoController::class, 'guardar']);

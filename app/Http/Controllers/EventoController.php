@@ -53,7 +53,6 @@ class EventoController extends Controller
           $authHeader = $request->header('Authorization'); 
           $token = str_replace('Bearer ', '', $authHeader); 
           $payload = JWT::decode($token);
-          Log::info('Payload decodificado: ', (array) $payload);
           if (!$payload || !isset($payload['user_id'])) {
               return response()->json([
                   'success' => false,

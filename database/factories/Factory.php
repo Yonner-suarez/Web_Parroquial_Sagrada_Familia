@@ -71,7 +71,6 @@ $factory->define(Suscripcion::class, function (Faker $faker) {
     return [
         'correo' => $faker->unique()->safeEmail,
         'tipo' => $faker->randomElement(['eventos', 'misa', 'newsletter']),
-        'usuario_id' => factory(Usuario::class),
         'creado_en' => now(),
     ];
 });
