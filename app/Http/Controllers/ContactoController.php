@@ -9,6 +9,7 @@ use App\Helpers\GeneralResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\NotificacionesHelper;
 
 class ContactoController extends Controller
 {
@@ -41,6 +42,8 @@ class ContactoController extends Controller
                 'leido'        => false,
                 'recibido_en'  => now(),
             ]);
+
+            NotificacionesHelper::enviarMailContacto($contacto);
 
             return response()->json([
                 'success' => true,

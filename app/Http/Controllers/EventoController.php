@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Evento;
 use App\Helpers\JWT;
+use App\Helpers\NotificacionesHelper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -76,15 +77,16 @@ class EventoController extends Controller
                 $path = $request->file('imagen')->store('eventos', 'public');
             }
 
-            Evento::create([
-                'titulo' => $request->titulo,
-                'descripcion' => $request->descripcion,
-                'fecha_inicio' => $request->fecha,
-                'hora' => $request->hora,
-                'lugar' => $request->lugar,
-                'imagen_url' => $path ? "/storage/$path" : null,
-                'creado_por' => $userId,
-            ]);
+            $evento = Evento::create([
+                  'titulo' => $request->titulo,
+                  'descripcion' => $request->descripcion,
+                  'fecha_inicio' => $request->fecha,
+                  'hora' => $request->hora,
+                  'lugar' => $request->lugar,
+                  'imagen_url' => $path ? "/storage/$path" : null,
+                  'creado_por' => $userId,
+              ]);
+            NotificacionesHelper::enviarMailEvento($evento);
 
             return response()->json([
                 'success' => true,
@@ -141,6 +143,7 @@ class EventoController extends Controller
             }
 
             $evento->update($request->only(['titulo', 'descripcion', 'fecha', 'hora', 'lugar']));
+            NotificacionesHelper::enviarMailEvento($evento);
 
             return response()->json([
                 'success' => true,

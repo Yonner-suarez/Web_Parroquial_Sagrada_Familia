@@ -99,14 +99,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let modo = 'agregar';
 
     function abrirModal(titulo, data = null) {
-      console.log(data)
-        const fecha = new Date(data.fecha_inicio);
-        const fechaFormateada = fecha.toISOString().split('T')[0]; // "2025-11-06"
+      let fechaFormateada = '';
+        if (!data || !data.fecha_inicio) {
+            fechaFormateada = '';
+        } else {
+            const fecha = new Date(data.fecha_inicio);
+            fechaFormateada = fecha.toISOString().split('T')[0];
+        }
         modal.classList.remove('hidden');
         modalTitulo.textContent = titulo;
         document.getElementById('titulo').value = data ? data.titulo : '';
         document.getElementById('descripcion').value = data ? data.descripcion : '';
-        document.getElementById('fecha').value = data ? fecha : '';
+        document.getElementById('fecha').value = data ? fechaFormateada : '';
         document.getElementById('hora').value = data ? data.hora : '';
         document.getElementById('lugar').value = data ? data.lugar : '';
         document.getElementById('eventoId').value = data ? data.id : '';
